@@ -14,7 +14,7 @@ const checkJwt = jwt({
     }),
 
     // Validate the audience and the issuer.
-    audience: 'https://bansalz.com/secure/ceremonies',
+    audience: 'https://bansalfamily.au.auth0.com/api/v2/',
     issuer: `https://bansalfamily.au.auth0.com/`,
     algorithms: ['RS256']
 });

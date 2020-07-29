@@ -11,6 +11,6 @@ module.exports = (app) => {
     //http://localhost:5000/api/auth/google/redirect
     app.get('/api/auth/google/redirect', passport.authenticate("google"), (req, res)=> {
         console.log("sending response to UI");
-        res.send("You reached callback URI");
+        res.send(req.user);
     });
 };

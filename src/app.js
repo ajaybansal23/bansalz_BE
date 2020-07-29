@@ -36,6 +36,7 @@ const connectionURL = `mongodb+srv://${keys.mongodb.userName}:${keys.mongodb.pas
 console.log(connectionURL);
 mongoose.connect(connectionURL, {
     useNewUrlParser: true,
+    useUnifiedTopology: true,
     useCreateIndex: true
 }, (err) => {
     if (err) {

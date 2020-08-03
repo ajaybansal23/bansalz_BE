@@ -3,8 +3,10 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-const cookieSession = require('cookie-session');
+const session = require('express-session');
 const passport = require('passport');
+const cookieParser = require('cookie-parser')
+
 
 const keys = require('./config/keys');
 
@@ -16,12 +18,15 @@ const keys = require('./config/keys');
 // 5. app.router
 
 app.use(cors());
+app.use(cookieParser("testsecret"))
 
-app.use(cookieSession({
-    //1 day in seconds
-    maxAge: 24 * 60 * 60 * 1000,
-    keys: [keys.session.cookieKey]
+
+app.use(session({
+    secret: keys.session.cookieKey,
+    resave: false,
+    saveUninitialized: false
 }));
+
 
 //initialize passport
 app.use(passport.initialize());
@@ -29,6 +34,7 @@ app.use(passport.session());
 
 require('./services/passport');
 require('./routes/authRoutes')(app);
+
 
 //connect to Mongodb
 const connectionURL = `mongodb+srv://${keys.mongodb.userName}:${keys.mongodb.password}@${keys.mongodb.cluster}.mongodb.net/${keys.mongodb.database}?retryWrites=true&w=majority`;

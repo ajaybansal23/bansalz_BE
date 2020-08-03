@@ -5,10 +5,12 @@ const util = require('util');
 const User = require('../db/models/userModel');
 
 passport.serializeUser((user, done) => {
+    console.log("Serializing User now!!!!!")
     done(null, user._id);
 });
 
 passport.deserializeUser((id, done) => {
+    console.log("DE-Serializing User now!!!!!")
 
     User.findById(id).then(user => {
         done(null, user);
@@ -17,36 +19,35 @@ passport.deserializeUser((id, done) => {
 
 passport.use(
     new GoogleStrategy({
-            clientID: keys.google.clientID,
-            clientSecret: keys.google.clientSecret,
-            callbackURL: '/api/auth/google/redirect'
+        clientID: keys.google.clientID,
+        clientSecret: keys.google.clientSecret,
+        callbackURL: '/api/auth/google/redirect'
     }, (accessToken, refreshToken, profile, done) => {
-            console.log('Hellllo');
-            User.findOne({googleId: profile.id}).then((currentUser) => {
+        console.log('Hellllo');
+        User.findOne({ googleId: profile.id }).then((currentUser) => {
+            if (currentUser) {
+                console.log('User Already Exists' + currentUser);
 
-                if (currentUser) {
-                    console.log( 'User Already Exists' + currentUser);
+                //This will call serialize
+                done(null, currentUser);
+            } else {
+                const userObj = {
+                    username: profile._json.name,
+                    googleId: profile._json.sub,
+                    email: profile._json.email,
+                    firstName: profile._json.given_name,
+                    lastName: profile._json.family_name,
+                    profilePic: profile._json.picture,
+                    status: "NEW"
+                };
+
+                new User(userObj).save().then(newUser => {
+                    console.log('New User Created' + newUser);
 
                     //This will call serialize
                     done(null, currentUser);
-                }else {
-                    const userObj = {
-                        username: profile._json.name,
-                        googleId: profile._json.sub,
-                        email: profile._json.email,
-                        firstName: profile._json.given_name,
-                        lastName: profile._json.family_name,
-                        profilePic: profile._json.picture,
-                        status: "NEW"
-                    };
-
-                    new User(userObj).save().then(newUser => {
-                        console.log('New User Created' + newUser);
-
-                         //This will call serialize
-                        done(null, currentUser);
-                    });
-                }
-            });
+                });
+            }
+        });
     })
 );

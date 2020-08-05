@@ -1,5 +1,16 @@
 const passport = require('passport');
 
+const checkAuthorization = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        console.log("user is authenticated")
+        next();
+    } else {
+        console.log("user is not authenticated")
+        res.status(403);
+        res.send({ message: "user is not authenticated" });
+    }
+}
+
 module.exports = (app) => {
 
     app.use(function (req, res, next) {
@@ -11,10 +22,13 @@ module.exports = (app) => {
     app.get('/api/auth/google', passport.authenticate("google", {
         scope: ["profile", "email"]
     }), (req, res, next) => {
+        console.log("over to google now....")
 
     });
 
     app.get('/api/auth/google/redirect', passport.authenticate("google", { failureRedirect: "/" }), (req, res) => {
+        console.log("got redirect back from google..and user is authenticated successfully")
+
         console.log("sending response to ----> UI");
         // req.app.set('user', res.req.user)
         res.cookie('cookieName', 'cookieValue');
@@ -22,9 +36,20 @@ module.exports = (app) => {
         return res.redirect(`/secure/home`);
     });
 
-    app.get('/api/secure/ceremonies', passport.authenticate('google'), (req, res) => {
+    app.get('/api/secure/ceremonies', checkAuthorization, (req, res) => {
         console.log("sending response to ----> UI");
         // req.app.set('user', res.req.user)
         res.send({ name: "Ajay" });
+    });
+
+    app.get('/api/secure/logout', checkAuthorization, (req, res) => {
+        req.logout();
+        res.send({ name: "user is now logged out" });
+    });
+
+    app.get('/api/secure/authentication', checkAuthorization, (req, res) => {
+        console.log("authentication is success. Now returning user object")
+        res.status(200);
+        res.send({ user: req.user });
     });
 };

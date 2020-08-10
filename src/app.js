@@ -1,15 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const mongoose = require('mongoose');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
+const morgan = require('morgan');
+const session = require("express-session");
+const passport = require("passport");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const keys = require("./config/keys");
+const mongoose = require("./db/connection/mongodb.connect");
+
 const app = express();
-const session = require('express-session');
-const passport = require('passport');
-const cookieParser = require('cookie-parser')
-
-
-const keys = require('./config/keys');
-
 //Init in the following Order
 // 1. cookieParser
 // 2. session
@@ -17,43 +16,33 @@ const keys = require('./config/keys');
 // 4. passport.session
 // 5. app.router
 
+//middleware to log HTTP
+app.use(morgan('dev'));
+
 app.use(cors());
-app.use(cookieParser("testsecret"))
+app.use(cookieParser("testsecret"));
 
-
-app.use(session({
+app.use(
+  session({
     secret: keys.session.cookieKey,
     resave: false,
-    saveUninitialized: false
-}));
-
+    saveUninitialized: false,
+  })
+);
 
 //initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./services/passport');
-require('./routes/authRoutes')(app);
+///use body parser
+app.use(bodyParser.urlencoded({extended: true}));
 
-
-//connect to Mongodb
-const connectionURL = `mongodb+srv://${keys.mongodb.userName}:${keys.mongodb.password}@${keys.mongodb.cluster}.mongodb.net/${keys.mongodb.database}?retryWrites=true&w=majority`;
-
-console.log(connectionURL);
-mongoose.connect(connectionURL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true
-}, (err) => {
-    if (err) {
-        console.log(err);
-        return;
-    }
-    console.log("Connected to mongodb");
-});
+//set the routes
+app.use(require('./routes/login.routes'));
+app.use(require('./routes/application.routes'));
 
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => {
-    console.log(`listening at http://localhost:${port}`);
+  console.log(`listening at http://localhost:${port}`);
 });

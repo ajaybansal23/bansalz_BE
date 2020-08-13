@@ -12,13 +12,16 @@ const checkAuthentication = (req, res, next) => {
 };
 
 const passportGoogleAuthenticationScope = passport.authenticate("google", {
-  scope: ["profile", "email"]
+  scope: ["profile", "email"],
 });
 
-const passportAuthenticate = passport.authenticate("google", { failureRedirect: "/" });
+const passportAuthenticate = passport.authenticate("google", {
+  successRedirect: "/auth/login/success",
+  failureRedirect: "/auth/login/failed",
+});
 
 module.exports = {
   checkAuthentication,
   passportGoogleAuthenticationScope,
-  passportAuthenticate
+  passportAuthenticate,
 };

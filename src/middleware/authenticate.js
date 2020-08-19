@@ -1,27 +1,54 @@
 const passport = require("passport");
+const jwt = require('jsonwebtoken');
+const keys = require("../config/keys");
 
-const checkAuthentication = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    console.log("user is authenticated");
+const checkAuthToken = (req, res, next) => {
+  try {
+    console.log("Verifying the JWT");
+    // console.log(req.headers);
+    // console.log(req.cookies);
+    const token = req.cookies.token;
+    // console.log(token);
+    const decoded = jwt.verify(token, "secret123");
+    console.log("decoded token is " + JSON.stringify(decoded));
     next();
-  } else {
-    console.log("user is not authenticated");
-    res.status(401);
-    res.send({ message: "user is not authenticated" });
+
+  } catch (e) {
+    res.status(401).send({ error: "user is not authenticated" })
   }
 };
+
+const generateAuthToken = (req, res, next) => {
+  console.log(req.user);
+  if (req.user.status === 'Registered') {
+    req.token = null;
+    next();
+  } else {
+    console.log("Going to generate JWT ....")
+    const token = jwt.sign(req.user.toJSON(), keys.jwtSecret, {
+      expiresIn: "1h"
+    })
+    console.log(token);
+    req.token = token;
+    res.cookie('token', token, {
+      httpOnly: true
+    })
+    next();
+  }
+}
 
 const passportGoogleAuthenticationScope = passport.authenticate("google", {
   scope: ["profile", "email"],
 });
 
 const passportAuthenticate = passport.authenticate("google", {
-  successRedirect: "/auth/login/success",
   failureRedirect: "/auth/login/failed",
 });
 
 module.exports = {
-  checkAuthentication,
+  generateAuthToken,
+  // checkAuthentication,
+  checkAuthToken,
   passportGoogleAuthenticationScope,
   passportAuthenticate,
 };

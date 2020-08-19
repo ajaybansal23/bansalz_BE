@@ -7,7 +7,7 @@ const appController = require("../controller/application.controller");
 
 router.get(
   "/api/secure/app/ceremonies",
-  authMiddleware.checkAuthentication,
+  authMiddleware.checkAuthToken,
   appController.ceremonies
 );
 

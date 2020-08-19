@@ -30,7 +30,7 @@ app.use(
     })
 );
 
-require("./middleware/passport.int");
+// require("./middleware/passport.int");
 
 //initialize passport
 app.use(passport.initialize());

@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const logout = (req, res) => {
   req.logout();
   res.status(200);
@@ -6,24 +8,20 @@ const logout = (req, res) => {
 
 const sendAuthenticationData = (req, res) => {
   console.log("authentication is success. Now returning user object");
+  const userInfo = req.user;
+  const token = req.cookies.token;
+  const decoded = jwt.verify(token, "secret123");
+  console.log("decoded token is " + JSON.stringify(decoded));
   res.status(200);
-  res.send({ user: req.user });
+  res.send({ userInfo, expiresAt: decoded.exp, token });
 };
 
-const redirectToUI = (req, res) => {
-  console.log(
-    "got redirect back from google..and user is authenticated successfully"
-  );
-
-  console.log("sending response to ----> UI");
-  // req.app.set('user', res.req.user)
-  res.cookie("cookieName", "cookieValue");
-  res.cookie("userID", res.req.user._id);
-  return res.redirect(`/secure/home`);
+const redirectToLoginSuccess = (req, res) => {
+  return res.redirect(`/auth/login/success`);
 };
 
 module.exports = {
   logout,
-  redirectToUI,
+  redirectToLoginSuccess,
   sendAuthenticationData,
 };

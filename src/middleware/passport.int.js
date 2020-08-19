@@ -25,7 +25,7 @@ passport.use(
       callbackURL: "/api/auth/google/redirect",
     },
     (accessToken, refreshToken, profile, done) => {
-      console.log("Hellllo");
+      console.log("Checking if user exists in DB");
       User.findOne({ googleId: profile.id }).then((currentUser) => {
         if (currentUser) {
           console.log("User Already Exists" + currentUser);

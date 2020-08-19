@@ -4,6 +4,8 @@ const authController = require("../controller/authentication.controller");
 
 const router = express.Router();
 
+require("../middleware/passport.int");
+
 router.get(
   "/api/auth/google",
   authMiddleware.passportGoogleAuthenticationScope,
@@ -15,18 +17,27 @@ router.get(
 router.get(
   "/api/auth/google/redirect",
   authMiddleware.passportAuthenticate,
-  authController.redirectToUI
+  authMiddleware.generateAuthToken,
+  authController.redirectToLoginSuccess
 );
 
 router.get(
   "/api/secure/logout",
-  authMiddleware.checkAuthentication,
+  authMiddleware.checkAuthToken,
+  // authMiddleware.checkAuthentication,
   authController.logout
 );
 
 router.get(
+  "/api/secure/userInfo",
+  authMiddleware.checkAuthToken,
+  authController.sendAuthenticationData
+);
+
+router.get(
   "/api/secure/authentication",
-  authMiddleware.checkAuthentication,
+  authMiddleware.checkAuthToken,
+  // authMiddleware.checkAuthentication,
   authController.sendAuthenticationData
 );
 

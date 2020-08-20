@@ -20,10 +20,10 @@ const checkAuthToken = (req, res, next) => {
 
 const generateAuthToken = (req, res, next) => {
   console.log(req.user);
-  if (req.user.status === 'Registered') {
+  if (req.user.status === 'NEW') {
     req.token = null;
     next();
-  } else {
+  } else if (req.user.status === 'REGISTERED') {
     console.log("Going to generate JWT ....")
     const token = jwt.sign(req.user.toJSON(), keys.jwtSecret, {
       expiresIn: "1h"
@@ -33,6 +33,10 @@ const generateAuthToken = (req, res, next) => {
     res.cookie('token', token, {
       httpOnly: true
     })
+    next();
+  }
+  else {
+    req.token = null;
     next();
   }
 }

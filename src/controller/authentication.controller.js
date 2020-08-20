@@ -17,7 +17,13 @@ const sendAuthenticationData = (req, res) => {
 };
 
 const redirectToLoginSuccess = (req, res) => {
-  return res.redirect(`/auth/login/success`);
+  if (req.user.status === "NEW") {
+    return res.redirect('/thankYou');
+  } else if (req.user.status === 'REGISTERED') {
+    return res.redirect(`/auth/login/success`);
+  } else {
+    return res.redirect('/auth/login/failed')
+  }
 };
 
 module.exports = {

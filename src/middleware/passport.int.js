@@ -29,7 +29,6 @@ passport.use(
       User.findOne({ googleId: profile.id }).then((currentUser) => {
         if (currentUser) {
           console.log("User Already Exists" + currentUser);
-
           //This will call serialize
           done(null, currentUser);
         } else {
@@ -40,14 +39,14 @@ passport.use(
             firstName: profile._json.given_name,
             lastName: profile._json.family_name,
             profilePic: profile._json.picture,
-            status: "NEW",
+            status: "NEW"
           };
 
           new User(userObj).save().then((newUser) => {
             console.log("New User Created" + newUser);
 
             //This will call serialize
-            done(null, currentUser);
+            done(null, newUser);
           });
         }
       });

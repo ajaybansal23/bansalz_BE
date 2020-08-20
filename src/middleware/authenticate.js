@@ -9,7 +9,7 @@ const checkAuthToken = (req, res, next) => {
     // console.log(req.cookies);
     const token = req.cookies.token;
     // console.log(token);
-    const decoded = jwt.verify(token, "secret123");
+    const decoded = jwt.verify(token, keys.jwtSecret);
     console.log("decoded token is " + JSON.stringify(decoded));
     next();
 

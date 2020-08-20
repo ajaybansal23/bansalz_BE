@@ -20,7 +20,7 @@ const app = express();
 app.use(morgan('dev'));
 
 app.use(cors());
-app.use(cookieParser("testsecret"));
+app.use(cookieParser());
 
 app.use(
     session({

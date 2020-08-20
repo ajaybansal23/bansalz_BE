@@ -17,11 +17,13 @@ const sendAuthenticationData = (req, res) => {
 };
 
 const redirectToLoginSuccess = (req, res) => {
-  if (req.user.status === "NEW") {
+
+  if (req.user.status === 'NEW') {
     return res.redirect('/thankYou');
   } else if (req.user.status === 'REGISTERED') {
     return res.redirect(`/auth/login/success`);
   } else {
+    console.log("In authentication controller else block")
     return res.redirect('/auth/login/failed')
   }
 };

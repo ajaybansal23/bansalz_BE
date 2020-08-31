@@ -6,12 +6,13 @@ const ceremonySchema = new Schema({
     description: String,
     imageUrl: String,
     subCeremonies: [{
-        subTitle: String,
-        subImage: String,
-        sections: [{
-            sectionTitle: String,
-            sectionDescription: String,
-            sectionImage: String
+        title: String,
+        imageUrl: String,
+        customs: [{
+            title: String,
+            participants: String,
+            thingsNeeded: String,
+            description: String
         }]
     }]
     
